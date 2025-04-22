@@ -1,12 +1,11 @@
-class Jogador:
-    """
-    Classe base para jogadores (Humanos ou IA).
-    """
-    def __init__(self, simbolo):
-        self.simbolo = simbolo  # Armazena 'X' ou 'O'
+from tabuleiro import Tabuleiro
 
-    def jogar(self, tabuleiro):
-        """
-        Método a ser implementado pelas subclasses para fazer a jogada.
-        """
-        raise NotImplementedError("Método jogar deve ser implementado pelas subclasses")
+class Jogador:
+    def __init__(self, tabuleiro : Tabuleiro, tipo : int):
+        self.matriz = tabuleiro.matriz
+        self.tabuleiro = tabuleiro
+        self.tipo = tipo
+        
+      
+    def getJogada(self) -> (int, int):
+        pass

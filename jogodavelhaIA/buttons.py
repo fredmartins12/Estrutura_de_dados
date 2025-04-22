@@ -43,4 +43,4 @@ class Botao(pygame.sprite.Sprite):
             # Centraliza o texto no botão
             pos = texto.get_rect(center=(self.tamanho // 2, self.tamanho // 2))
             self.image.blit(texto, pos)
-        return Tru
+        return True

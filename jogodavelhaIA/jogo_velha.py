@@ -1,37 +1,62 @@
+# -*- coding: utf-8 -*-
+from tabuleiro_screen import TabuleiroScreen
 from tabuleiro import Tabuleiro
-from jogador_humano import JogadorHumano
+from jogador import Jogador
 from jogador_ia import JogadorIA
+from jogador_humano import JogadorHumano
 
-class JogoDaVelha:
-    """
-    Controla o fluxo do jogo: turnos, vitória e empate.
-    """
+class JogoVelha:
     def __init__(self):
+        self.screen = TabuleiroScreen()
         self.tabuleiro = Tabuleiro()
-        self.turno = Tabuleiro.X  # X inicia
-        self.jogador_x = JogadorHumano(Tabuleiro.X)
-        self.jogador_o = JogadorIA(Tabuleiro.O)
-        self.running = True
-        self.ultimo_simbolo = ''
-
-    def fazer_jogada(self, linha, coluna):
-        """
-        Executa a jogada do jogador atual.
-        Retorna True se a jogada foi válida.
-        """
-        jogador = self.jogador_x if self.turno == Tabuleiro.X else self.jogador_o
-        if jogador.jogar(self, linha, coluna):
-            # Armazena símbolo para atualizar a interface
-            self.ultimo_simbolo = 'X' if self.turno == Tabuleiro.X else 'O'
-            # Verifica vitória ou empate
-            if self.tabuleiro.verificar_vitoria(self.turno):
-                print(f"{self.ultimo_simbolo} venceu!")
-                self.running = False
-            elif self.tabuleiro.cheia():
-                print("Empate!")
-                self.running = False
-            else:
-                # Alterna turno
-                self.turno = Tabuleiro.O if self.turno == Tabuleiro.X else Tabuleiro.X
+        
+        # Jogadores
+        self.jogadores = [
+            JogadorIA(self.tabuleiro, Tabuleiro.JOGADOR_0),
+            JogadorHumano(self.tabuleiro, self.screen.buttons, Tabuleiro.JOGADOR_X)
+        ]
+        self.id_jogador_corrente = 0
+        self.jogador_corrente: Jogador = self.jogadores[self.id_jogador_corrente]
+        
+    def troca_jogador(self):
+        self.id_jogador_corrente = (self.id_jogador_corrente + 1) % 2
+        self.jogador_corrente = self.jogadores[self.id_jogador_corrente]
+        
+    def wait_quit_event(self):
+        self.screen.wait_quit_event()
+    
+    def acabou_jogo(self):
+        resultado = self.tabuleiro.tem_campeao()
+        
+        if resultado == Tabuleiro.JOGADOR_X:
+            self.screen.resultado_txt = "X vencedor!"
             return True
+            
+        if resultado == Tabuleiro.JOGADOR_0:
+            self.screen.resultado_txt = "O vencedor!"
+            return True
+        
         return False
+                              
+    def start(self):
+        acabou_jogo = False
+        contador = 0
+        
+        while True:
+            x, y = self.jogador_corrente.getJogada()
+            self.screen.update_text_button(x, y, self.jogador_corrente.tipo)
+            self.tabuleiro.matriz[x][y] = self.jogador_corrente.tipo
+                                
+            contador += 1
+            
+            if self.acabou_jogo():
+                self.screen.desenha_tabuleiro()
+                break
+            
+            if contador == 9:
+                self.screen.resultado_txt = "Deu velha!"
+                self.screen.desenha_tabuleiro()
+                break
+            
+            self.screen.desenha_tabuleiro()
+            self.troca_jogador()

@@ -8,6 +8,10 @@ class Tabuleiro:
         self.matriz = [ [Tabuleiro.DESCONHECIDO, Tabuleiro.DESCONHECIDO, Tabuleiro.DESCONHECIDO], 
                         [Tabuleiro.DESCONHECIDO, Tabuleiro.DESCONHECIDO, Tabuleiro.DESCONHECIDO],
                         [Tabuleiro.DESCONHECIDO, Tabuleiro.DESCONHECIDO, Tabuleiro.DESCONHECIDO]]
+#Aqui, uma lista de listas implementa uma matriz 3×3, permitindo acesso direto e constante a cada célula via matriz[linha][coluna]
+#Por que é importante:
+#Indexação O(1): pegar ou alterar o valor de qualquer posição é feito em tempo constante graças à implementação interna como array 
+#Iteração simples: loops aninhados permitem percorrer linhas e colunas de forma clara, essencial para verificar condições de vitória.
 
     def tem_campeao(self):
         # Verificar linhas

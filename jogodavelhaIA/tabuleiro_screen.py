@@ -1,47 +1,42 @@
-# -*- coding: utf-8 -*-
-import buttons as bt
 import pygame
+from buttons import Botao, NOME_CORES
+from pygame.locals import QUIT, MOUSEBUTTONDOWN
 
-class TabuleiroScreen:
-    def __init__(self):
-        self.resultado_txt = ""
-        pygame.init()
-        screen = pygame.display.set_mode((700, 700))
-        screen.fill((255, 255, 255))                
-        self.screen = screen
-        self.buttons = [[], [], []]
-         
-        for l in range(0,3):
-            y = 50 + l*200
-            for c in range(0,3):
-                x = 50 + c*200
-                self.buttons[l].append( bt.Button(self.screen, (x, y), (200, 200)))
-        
-        self.desenha_tabuleiro()
-         
-    def wait_quit_event(self):
+class TelaTabuleiro:
+    """
+    Interface gráfica que mostra o tabuleiro e gerencia eventos.
+    """
+    def __init__(self, tela, jogo):
+        self.tela = tela
+        self.jogo = jogo
+        # Cada célula ocupa 1/3 da largura da janela
+        self.tamanho = tela.get_width() // 3
+        # Grupo de sprites contendo todos os botões
+        self.sprites = pygame.sprite.Group()
+        for i in range(3):
+            for j in range(3):
+                btn = Botao(i, j, self.tamanho)
+                self.sprites.add(btn)
+
+    def loop(self):
+        """
+        Loop principal: captura eventos e atualiza a tela.
+        """
         while True:
-            for event in pygame.event.get():
-                if (event.type == pygame.QUIT):
+            for ev in pygame.event.get():
+                if ev.type == QUIT:
                     pygame.quit()
-         
-    def desenha_tabuleiro(self):
-        bt.buttons_v.update()
-        bt.buttons_v.draw(self.screen)
-        
-        pygame.draw.line(self.screen,(0, 0, 0),(250,50),(250,650), 5)
-        pygame.draw.line(self.screen,(0, 0, 0),(450,50),(450,650), 5)
-        pygame.draw.line(self.screen,(0, 0, 0),(50,250),(650,250), 5)
-        pygame.draw.line(self.screen,(0, 0, 0),(50,450),(650,450), 5)
-        
-        colors = "black on white"
-        fg, _ = colors.split(" on ")
-        font = pygame.font.SysFont("Arial", 40)
-        text_render = font.render(self.resultado_txt, 1, fg)
-        self.screen.blit(text_render, (270, 5))
-        
-        pygame.display.update()
-        
-    def update_text_button(self, x : int, y : int, player : int):
-        b = self.buttons[x][y]
-        b.change_text(player)
+                    return
+                if ev.type == MOUSEBUTTONDOWN and self.jogo.running:
+                    x, y = ev.pos
+                    for btn in self.sprites:
+                        if btn.rect.collidepoint(x, y):
+                            # Tenta executar a jogada e atualiza o botão se válido
+                            if self.jogo.fazer_jogada(btn.linha, btn.coluna):
+                                btn.set_simbolo(self.jogo.ultimo_simbolo)
+                            break
+
+            # Desenha o fundo e todos os botões
+            self.tela.fill(NOME_CORES['preto'])
+            self.sprites.draw(self.tela)
+            pygame.display.flip()

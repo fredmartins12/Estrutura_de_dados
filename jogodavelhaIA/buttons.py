@@ -1,46 +1,42 @@
 import pygame
+from tabuleiro import Tabuleiro
+ 
+buttons_v = pygame.sprite.Group()
 
-# Define cores usadas no jogo\NOME_CORES = {
-    'preto': (0, 0, 0),
-    'branco': (255, 255, 255),
-    'azul': (0, 0, 255),
-    'cinza': (192, 192, 192),
-    'dourado': (255, 215, 0)
-}
-
-class Botao(pygame.sprite.Sprite):
-    def __init__(self, linha, coluna, tamanho):
+class Button(pygame.sprite.Sprite):
+    def __init__(self, screen, position, dim):
         super().__init__()
-        # Guarda posição lógica do botão
-        self.linha = linha
-        self.coluna = coluna
-        self.tamanho = tamanho
-
-        # Cria superfície do botão
-        self.image = pygame.Surface((tamanho, tamanho))
-        # Define cores padrão (texto e fundo)
-        self.cor_texto = NOME_CORES['preto']
-        self.cor_fundo = NOME_CORES['branco']
-        # Preenche fundo
-        self.image.fill(self.cor_fundo)
-        # Define retângulo para colisão e posicionamento
-        self.rect = self.image.get_rect()
-        self.rect.topleft = (coluna * tamanho, linha * tamanho)
-
-        # Fonte para desenhar X ou O
-        self.fonte = pygame.font.SysFont('Arial', tamanho // 2)
-        self.simbolo = ''  # '', 'X' ou 'O'
-
-    def set_simbolo(self, simbolo):
-        # Só define se ainda não houver símbolo
-        if self.simbolo:
+        self.colors = "black on white"
+        self.fg, self.bg = self.colors.split(" on ")
+        
+        self.x, self.y = position
+        self.w , self.h = dim
+        self.rect = pygame.Rect(self.x, self.y, self.w, self.h)
+        self.screen = screen
+        self.jogador = Tabuleiro.DESCONHECIDO
+        self.change_text(Tabuleiro.DESCONHECIDO)
+        self.update()
+        buttons_v.add(self)
+ 
+ 
+    def change_text(self, jogador):
+        if(self.jogador != Tabuleiro.DESCONHECIDO):
             return False
-        self.simbolo = simbolo
-        # Atualiza visual
-        self.image.fill(self.cor_fundo)
-        if simbolo:
-            texto = self.fonte.render(simbolo, True, self.cor_texto)
-            # Centraliza o texto no botão
-            pos = texto.get_rect(center=(self.tamanho // 2, self.tamanho // 2))
-            self.image.blit(texto, pos)
+        self.jogador = jogador
+        self.font = pygame.font.SysFont("Arial", 150)
+        
+        if(jogador == Tabuleiro.JOGADOR_X):
+            self.text_render = self.font.render("  X", 1, self.fg)
+        elif(jogador == Tabuleiro.JOGADOR_0):
+            self.text_render = self.font.render("  O", 1, self.fg)
+        else:
+            self.text_render = self.font.render("  ", 1, self.fg)
+        
+        self.screen.blit(self.text_render, (self.x, self.y))
         return True
+        
+ 
+    def update(self):
+        self.fg, self.bg = self.colors.split(" on ")
+        pygame.draw.rect(self.screen, self.bg, (self.x, self.y, self.w , self.h))
+        self.image = self.text_render

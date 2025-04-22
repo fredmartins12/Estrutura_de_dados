@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 from random import randint
 from jogador import Jogador
 from tabuleiro import Tabuleiro

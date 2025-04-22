@@ -122,6 +122,10 @@ class JogadorIA(Jogador):
             for c in range(3):
                 if self.matriz[l][c] == Tabuleiro.DESCONHECIDO:
                     lista_vazia.append((l, c))
+    #Coleta todas as tuplas (linha, coluna) de casas vazias numa lista, que depois serve para escolha aleatória.
+    #Por que é importante:
+    #Filtragem dinâmica: a IA considera apenas posições livres, garantindo jogadas válidas.
+
         if lista_vazia:
             return lista_vazia[randint(0, len(lista_vazia) - 1)]
         return None

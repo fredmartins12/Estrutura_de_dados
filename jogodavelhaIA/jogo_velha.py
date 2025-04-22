@@ -15,6 +15,9 @@ class JogoVelha:
             JogadorIA(self.tabuleiro, Tabuleiro.JOGADOR_0),
             JogadorHumano(self.tabuleiro, self.screen.buttons, Tabuleiro.JOGADOR_X)
         ]
+#Uma lista simples armazena objetos de diferentes classes (IA e humano), suportando polimorfismo para chamadas genéricas a getJogada(). 
+#Por que é importante:
+#Alternância genérica: mudar de jogador é apenas id_jogador_corrente = (id_jogador_corrente + 1)
         self.id_jogador_corrente = 0
         self.jogador_corrente: Jogador = self.jogadores[self.id_jogador_corrente]
         
